@@ -1,0 +1,35 @@
+
+add player Pippo
+add player Pluto
+players: Pippo, Pluto
+
+add player Pippo
+Pippo: already existing player
+
+
+move Pippo 4, 2
+Pippo rolls 4, 2. Pippo moves from Start to 6
+
+move Pluto 2, 2
+Pluto rolls 2, 2. Pluto moves from Start to 4
+
+move Pippo 2, 3
+Pippo rolls 2, 3. Pippo moves from 6 to 11
+
+
+add player Pippo
+move Pippo 2,2
+move Pippo 1,1
+Pippo rolls 1, 1. Pippo moves from 4 to The Bridge. Pippo jumps to 12
+
+add player Pippo
+move Pippo 1, 2
+move Pippo 1, 1
+Pippo rolls 1, 1. Pippo moves from 3 to 5, The Goose. Pippo moves again and goes to 7
+
+move Pippo 1, 2
+move Pippo 2, 2
+Pippo rolls 2, 2. Pippo moves from 10 to 14, The Goose. Pippo moves again and goes to 18, The Goose. Pippo moves again and goes to 22
+
+
+Pippo rolls 1, 1. Pippo moves from 15 to 17. On 17 there is Pluto, who returns to 15
