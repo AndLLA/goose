@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import goose.domain.Move;
 import goose.domain.Player;
@@ -29,6 +31,8 @@ public class ConsoleGame {
 		System.out.println("Goose Game");
 		
 		BufferedReader rdr = new BufferedReader(new InputStreamReader(System.in));
+		Pattern ptrnMove = Pattern.compile("^(move)(\\ )([a-zA-Z0-9]+)(\\ )([1-6]{1})([\\,\\ ]+)([1-6]{1})$");
+		Pattern ptrnMoveNoDice = Pattern.compile("^(move)(\\ )([a-zA-Z0-9]+)$");
 		
 		while (!g.isFinished()) {
 			String cmd = rdr.readLine();
@@ -52,6 +56,9 @@ public class ConsoleGame {
 			if (cmd.startsWith(cmdAddPlayer)) {
 				String pn = cmd.substring(cmdAddPlayer.length()+1).trim(); 
 				try {
+					if (!Pattern.matches("[a-z,A-Z,0-9]+", pn))
+						throw new GameException(pn + ": invalida name");
+					
 					g.addPlayer(pn);
 					System.out.println("Players: " + g.getPlayersNames());
 				} catch (GameException e) {
@@ -61,20 +68,31 @@ public class ConsoleGame {
 			}
 			
 			if (cmd.startsWith(cmdMove)) {
-				cmd = cmd.substring(cmdMove.length()+1).trim();
-				String[] sCmd = cmd.split("\\ |\\,");
-				
-				String playerName = sCmd[0];
-				int rollA, rollB;
-				if (sCmd.length >= 3) {
-					rollA = Integer.parseInt(sCmd[1]);
-					rollB = Integer.parseInt(sCmd[sCmd.length-1]);
-				} else {
-					rollA = rnd.nextInt(6)+1;
-					rollB = rnd.nextInt(6)+1;
+				try {
+					cmd = cmd.trim();
+					
+					Matcher cmdMatcher = ptrnMove.matcher(cmd);
+					if (cmdMatcher.matches()) {
+						String playerName = cmdMatcher.group(3);
+						int rollA = Integer.parseInt(cmdMatcher.group(5));
+						int rollB = Integer.parseInt(cmdMatcher.group(7));
+						movePlayer(playerName, rollA, rollB);
+						continue;
+					}
+					
+					Matcher cmdMatcherNodice = ptrnMoveNoDice.matcher(cmd);
+					if (cmdMatcherNodice.matches()) {
+						String playerName = cmdMatcherNodice.group(3);
+						int rollA = rnd.nextInt(6)+1;
+						int rollB = rnd.nextInt(6)+1;
+						movePlayer(playerName, rollA, rollB);
+						continue;
+					}
+					
+					System.out.println(cmd + ": Malformed move command");
+				} catch (NumberFormatException e) {
+					System.out.println(cmd + ": Malformed move command " + e.getMessage());
 				}
-				
-				movePlayer(playerName, rollA, rollB);
 				continue;				
 			}
 			
@@ -112,6 +130,9 @@ public class ConsoleGame {
 				
 				String sTo = Integer.toString(m.getTo());
 				switch(m.getTo()) {
+				case 0:
+					sTo = "Start";
+					break;
 				case 6:
 					sTo = "The Bridge";
 					break;
